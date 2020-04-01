@@ -1,0 +1,116 @@
+{
+  "parser": "babel-eslint",
+  "plugins": ["react", "react-hooks", "prettier"],
+  "extends": ["plugin:react/recommended", "prettier/react"],
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  },
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "ecmaVersion": 6,
+    "sourceType": "module"
+  },
+  "env": {
+    "es6": true,
+    "jest": true,
+    "browser": true,
+    "node": true,
+    "jquery": true
+  },
+  "globals": {
+    "window": true,
+    "document": true,
+    "__dirname": true,
+    "module": true,
+    "global": true,
+    "CONFIG": true
+  },
+  "rules": {
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn",
+
+    "indent": ["error", 4, { "SwitchCase": 1 }],
+    "no-console": "warn",
+    "no-return-await": "error",
+    "jsx-quotes": ["error", "prefer-single"],
+    "no-extra-bind": "error",
+    "semi": "error",
+    "prefer-const": "error",
+    "curly": "error",
+    "eol-last": "error",
+    "no-extra-label": "error",
+    "max-len": ["error", { "code": 140 }],
+    "no-debugger": "error",
+    "no-duplicate-imports": "error",
+    "no-var": "error",
+    "one-var-declaration-per-line": "error",
+    "no-undef": "error",
+    "no-eval": "error",
+    "no-fallthrough": "error",
+    "eqeqeq": ["error", "always"],
+    "space-before-function-paren": "error",
+    "spaced-comment": "error",
+    "no-new-object": "error",
+    "object-shorthand": "error",
+    "no-array-constructor": "error",
+    "array-callback-return": "error",
+    "prefer-destructuring": "error",
+    "quotes": ["error", "single"],
+    "prefer-template": "error",
+    "template-curly-spacing": "error",
+    "func-style": "error",
+    "no-loop-func": "error",
+    "prefer-rest-params": "error",
+    "no-new-func": "error",
+    "space-before-blocks": "error",
+    "no-param-reassign": "error",
+    "prefer-spread": "error",
+    "prefer-arrow-callback": "error",
+    "arrow-spacing": "error",
+    "arrow-parens": "error",
+    "arrow-body-style": "error",
+    "no-iterator": "error",
+    "no-restricted-syntax": "error",
+    "generator-star-spacing": "error",
+    "dot-notation": "error",
+    "no-restricted-properties": "error",
+    "require-await": "error",
+    "one-var": ["error", "never"],
+    "no-multi-assign": "error",
+    "no-plusplus": "error",
+    "no-unneeded-ternary": "error",
+    "nonblock-statement-body-position": "error",
+    "brace-style": "error",
+    "no-else-return": "error",
+    "keyword-spacing": "error",
+    "space-infix-ops": "error",
+    "newline-per-chained-call": "error",
+    "padded-blocks": ["error", "never"],
+    "no-multiple-empty-lines": "error",
+    "space-in-parens": ["error", "never"],
+    "array-bracket-spacing": "error",
+    "object-curly-spacing": ["error", "always"],
+    "block-spacing": "error",
+    "comma-spacing": "error",
+    "computed-property-spacing": "error",
+    "func-call-spacing": "error",
+    "key-spacing": "error",
+    "no-trailing-spaces": [
+      "error",
+      {
+        "skipBlankLines": true
+      }
+    ],
+    "comma-style": "error",
+    "comma-dangle": ["error", "always-multiline"],
+    "no-new-wrappers": "error",
+    "radix": "error",
+    "id-length": "error",
+    "new-cap": "error",
+    "no-restricted-globals": "error"
+  }
+}

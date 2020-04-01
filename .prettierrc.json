@@ -1,0 +1,15 @@
+{
+  "overrides": [
+    {
+      "files": ["*.js", "*.jsx", "*.ts", "*.tsx"],
+      "options": {
+        "arrowParens": "always",
+        "singleQuote": true,
+        "jsxSingleQuote": true,
+        "tabWidth": 4,
+        "printWidth": 140,
+        "trailingComma": "all"
+      }
+    }
+  ]
+}
