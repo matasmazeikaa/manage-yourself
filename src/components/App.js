@@ -1,6 +1,12 @@
 import React from 'react';
-import './App.css';
+import { Switch, Route } from 'react-router-dom';
+import LoginPage from './Authentication/LoginPage';
 
-const App = () => <div className='App'>Hi</div>;
+const App = () => (
+    <Switch>
+        <Route path='/login' component={LoginPage} />
+        {/* <Route path='/register' component={} />*/}
+    </Switch>
+);
 
 export default App;

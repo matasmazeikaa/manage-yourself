@@ -1,4 +1,4 @@
-import { observable, action, flow } from 'mobx';
+import { action, runInAction, observable } from 'mobx';
 import CommonStore from './CommonStore';
 import apiClient from '../utils/api-client';
 
@@ -12,12 +12,8 @@ class AuthorizationStore {
         password: '',
     };
 
-    @action setUsername (username) {
-        this.values.username = username;
-    }
-
-    @action setPassword (password) {
-        this.values.password = password;
+    @action handleAuthorizationInput (name, value) {
+        this.values[name] = value;
     }
 
     @action reset () {
@@ -26,33 +22,40 @@ class AuthorizationStore {
         this.values.password = '';
     }
 
-    login = flow(function *() {
+    @action
+    async login () {
         this.isLoadingAuthorization = true;
         this.errors = null;
 
         try {
-            const { user } = yield apiClient.Auth.login(this.values.email, this.values.password);
-        } catch (error) {
-            this.errors = error.response.data;
-            throw error;
-        } finally {
-            this.isLoadingAuthorization = false;
-        }
-    });
+            const { user } = await apiClient.Auth.login(this.values.email, this.values.password);
 
-    register = flow(function *() {
+            runInAction(() => CommonStore.setToken(user.token));
+        } catch (error) {
+            runInAction(() => {
+                this.errors = error.response.data;
+                throw error;
+            });
+        } finally {
+            runInAction(() => this.isLoadingAuthorization = false);
+        }
+    }
+
+    async register () {
         this.isLoadingAuthorization = true;
         this.errors = null;
 
         try {
-            yield apiClient.Auth.register(this.values.username, this.values.email, this.values.password);
+            await apiClient.Auth.register(this.values.username, this.values.email, this.values.password);
         } catch (error) {
-            this.errors = error.response.data;
-            throw error;
+            runInAction(() => {
+                this.errors = error.response.data;
+                throw error;
+            });
         } finally {
-            this.isLoadingAuthorization = false;
+            runInAction(() => this.isLoadingAuthorization = false);
         }
-    });
+    }
 }
 
 export default new AuthorizationStore();

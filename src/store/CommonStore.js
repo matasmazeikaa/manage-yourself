@@ -1,9 +1,9 @@
-import { observable, action, reaction } from 'mobx';
+import { action, observable, reaction } from 'mobx';
 
 class CommonStore {
     @observable token = window.localStorage.getItem('auth-token');
 
-    constructor() {
+    constructor () {
         reaction(
             () => this.token,
             (token) => {
@@ -16,7 +16,7 @@ class CommonStore {
         );
     }
 
-    @action setToken(token) {
+    @action setToken (token) {
         this.token = token;
     }
 }
