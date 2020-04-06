@@ -1,0 +1,45 @@
+{
+  "compilerOptions": {
+    "jsx": "react",
+    "allowJs": true,
+    "importHelpers": true,
+    "module": "esnext",
+    "resolveJsonModule": true,
+    "moduleResolution": "node",
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "noUnusedLocals": true,
+    "esModuleInterop": true,
+    "noImplicitAny": false,
+    "emitDecoratorMetadata": true,
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "outDir": "./build/",
+    "target": "es2016",
+    "lib": [
+      "es2015",
+      "es2016",
+      "es2017",
+      "es2018.promise",
+      "dom"
+    ],
+    "baseUrl": "./src",
+    "rootDirs": [
+      "./src"
+    ],
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+    "noEmit": true
+  },
+  "exclude": [
+    "node_modules",
+    "dist",
+    "coverage",
+    ".config"
+  ],
+  "include": [
+    "src/**/*",
+    "typings/**/*"
+  ]
+}

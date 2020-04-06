@@ -1,0 +1,59 @@
+.button {
+  display: inline-flex;
+  height: 40px;
+  width: 150px;
+  border: 2px solid white;
+  margin: 40px 20px 20px 20px;
+  color: #BFC0C0;
+  text-transform: uppercase;
+  text-decoration: none;
+  font-size: .8em;
+  letter-spacing: 1.5px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  font-weight: bold;
+}
+
+a {
+  color: white;
+  text-decoration: none;
+  letter-spacing: 1px;
+}
+
+#button-6 {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+#button-6 a {
+  position: relative;
+  transition: all .45s ease-Out;
+}
+
+#spin {
+  width: 0;
+  height: 0;
+  opacity: 0;
+  left: 70px;
+  top: 20px;
+  transform: rotate(0deg);
+  background: none;
+  position: absolute;
+  transition: all .5s ease-Out;
+}
+
+#button-6:hover #spin {
+  width: 200%;
+  height: 500%;
+  opacity: 1;
+  left: -70px;
+  top: -70px;
+  background: white;
+  transform: rotate(80deg);
+}
+
+#button-6:hover a {
+  color: #2D3142;
+}

@@ -1,11 +1,10 @@
-import { action, runInAction, observable } from 'mobx';
+import { action, flow, observable } from 'mobx';
 import CommonStore from './CommonStore';
 import apiClient from '../utils/api-client';
 
 class AuthorizationStore {
     @observable isLoadingAuthorization = false;
     @observable errors = null;
-
     @observable values = {
         username: '',
         email: '',
@@ -22,40 +21,39 @@ class AuthorizationStore {
         this.values.password = '';
     }
 
-    @action
-    async login () {
+    *_login () {
         this.isLoadingAuthorization = true;
         this.errors = null;
 
         try {
-            const { user } = await apiClient.Auth.login(this.values.email, this.values.password);
+            const { user } = yield apiClient.Auth.login(this.values.email, this.values.password);
 
-            runInAction(() => CommonStore.setToken(user.token));
+            CommonStore.setToken(user.token);
         } catch (error) {
-            runInAction(() => {
-                this.errors = error.response.data;
-                throw error;
-            });
+            this.errors = error.response.data;
+            throw error;
         } finally {
-            runInAction(() => this.isLoadingAuthorization = false);
+            this.isLoadingAuthorization = false;
         }
     }
+    login = flow(this._login);
 
-    async register () {
+    *_register () {
         this.isLoadingAuthorization = true;
         this.errors = null;
 
         try {
-            await apiClient.Auth.register(this.values.username, this.values.email, this.values.password);
+            const response = yield apiClient.Auth.register(this.values.username, this.values.email, this.values.password);
+
+            console.log(response);
         } catch (error) {
-            runInAction(() => {
-                this.errors = error.response.data;
-                throw error;
-            });
+            this.errors = error.response.data;
+            throw error;
         } finally {
-            runInAction(() => this.isLoadingAuthorization = false);
+            this.isLoadingAuthorization = false;
         }
     }
+    register = flow(this._register);
 }
 
 export default new AuthorizationStore();
