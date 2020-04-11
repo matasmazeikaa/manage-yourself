@@ -16,13 +16,17 @@
     "prop-types": "^15.5.10",
     "query-string": "5.0.0",
     "react": "^16.13.1",
+    "react-beautiful-dnd": "^13.0.0",
     "react-dom": "^16.13.1",
+    "react-icons": "^3.9.0",
     "react-router-dom": "^5.1.2",
     "react-scripts": "^3.4.1",
+    "react-textarea-autosize": "^7.1.2",
     "sass": "^1.26.3",
     "superagent": "^3.6.0",
     "superagent-promise": "^1.1.0",
-    "typescript": "^3.8.3"
+    "typescript": "^3.8.3",
+    "uuid": "^7.0.3"
   },
   "devDependencies": {
     "babel-eslint": "^10.1.0",

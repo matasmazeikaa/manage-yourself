@@ -17,8 +17,6 @@ const RegistrationPage = () => {
         authorizationStore.handleAuthorizationInput(target.name, target.value);
     };
 
-    console.log(authorizationStore.values);
-
     return (
         <div className='page-container'>
             <h1>Register</h1>
