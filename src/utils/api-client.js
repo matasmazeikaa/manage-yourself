@@ -1,52 +1,44 @@
-import superagentPromise from 'superagent-promise';
-import _superagent from 'superagent';
 import CommonStore from '../store/CommonStore';
+import axios from 'axios';
 
-const superagent = superagentPromise(_superagent, global.Promise);
+const API_URL = 'http://localhost:3001/api/v1';
 
-const API_URL = 'http://localhost:3001';
+const LOGIN_URL = 'user/login';
+const REGISTER_URL = 'user/register';
 
-const handleErrors = (error) => {
-    if (error && error.response && error.response.status === 401) {
-        // logout
+let instance = null;
+
+const apiConfig = () => ({
+    baseURL: API_URL,
+    timeout: 10000,
+    headers: {
+        'Content-Type': 'application/json',
+    },
+});
+
+const apiClient = () => {
+    if (instance !== null) {
+        return instance;
     }
 
-    return error;
+    console.log(CommonStore.token);
+    instance = axios.create(apiConfig());
+
+    return instance;
 };
 
-const responseBody = (response) => response.body;
+export default apiClient();
 
-const setAuthorizationHeader = (request) => {
-    // there is auth token set token
-    if (CommonStore.token) {
-        request.set('Authorization', `Token ${CommonStore.token}`);
-    }
-};
+export const setAxiosInterceptors = (instance) => {
+    instance.interceptors.response.use((response) => {
+        if (response.config.url === LOGIN_URL || response.config.url === REGISTER_URL) {
+            console.log(response.data.token);
+            instance.defaults.headers.common.Authorization = response.data.token;
+            window.localStorage.setItem('auth-token', response.data.token);
 
-const requests = {
-    del: (url) => superagent.del(`${API_URL}${url}`).use(setAuthorizationHeader)
-        .end(handleErrors)
-        .then(responseBody),
-    get: (url) => superagent.get(`${API_URL}${url}`).use(setAuthorizationHeader)
-        .end(handleErrors)
-        .then(responseBody),
-    put: (url, body) => superagent.put(`${API_URL}${url}`, body).use(setAuthorizationHeader)
-        .end(handleErrors)
-        .then(responseBody),
-    post: (url, body) => superagent.post(`${API_URL}${url}`, body).use(setAuthorizationHeader)
-        .end(handleErrors)
-        .then(responseBody),
-};
+            return response;
+        }
 
-const Auth = {
-    login: (email, password) => {
-        requests.post('/user/login', { email, password });
-    },
-    register: (username, email, password) => {
-        requests.post('/user/register', { username, email, password });
-    },
-};
-
-export default {
-    Auth,
+        return response;
+    });
 };

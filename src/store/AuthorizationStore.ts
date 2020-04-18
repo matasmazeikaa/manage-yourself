@@ -1,6 +1,6 @@
 import { action, flow, observable } from 'mobx';
-import CommonStore from './CommonStore';
 import apiClient from '../utils/api-client';
+import CommonStore from './CommonStore';
 
 class AuthorizationStore {
     @observable isLoadingAuthorization = false;
@@ -11,11 +11,11 @@ class AuthorizationStore {
         password: '',
     };
 
-    @action handleAuthorizationInput (name, value) {
+    @action.bound handleAuthorizationInput (name, value) {
         this.values[name] = value;
     }
 
-    @action reset () {
+    @action resetAuthorizationStoreInputValues () {
         this.values.username = '';
         this.values.email = '';
         this.values.password = '';
@@ -26,12 +26,18 @@ class AuthorizationStore {
         this.errors = null;
 
         try {
-            const { user } = yield apiClient.Auth.login(this.values.email, this.values.password);
+            const { data } = yield apiClient.post('user/login', {
+                email: this.values.email,
+                password: this.values.password,
+            });
 
-            CommonStore.setToken(user.token);
+            CommonStore.setToken(data.token);
+
+            return data;
         } catch (error) {
-            this.errors = error.response.data;
-            throw error;
+            console.log(error);
+            this.errors = error.errors;
+            return error.response.data;
         } finally {
             this.isLoadingAuthorization = false;
         }
@@ -43,12 +49,13 @@ class AuthorizationStore {
         this.errors = null;
 
         try {
-            const response = yield apiClient.Auth.register(this.values.username, this.values.email, this.values.password);
-
-            console.log(response);
+            return yield apiClient.post('user/register', {
+                username: this.values.username,
+                password: this.values.password,
+                email: this.values.email,
+            });
         } catch (error) {
-            this.errors = error.response.data;
-            throw error;
+            return error.response.data;
         } finally {
             this.isLoadingAuthorization = false;
         }

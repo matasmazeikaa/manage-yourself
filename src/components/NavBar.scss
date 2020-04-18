@@ -1,0 +1,33 @@
+.navbar-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+  background: #81171B;
+  height: 32px;
+  padding: 5px;
+
+  .boards-nav {
+    color: white;
+    background-color: #C52233;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 8px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.1s ease-in;
+    margin-left: 8px;
+
+    &:first-child {
+      margin-left: 0;
+    }
+
+    &:hover {
+      background-color: #969696;
+    }
+
+    span {
+      margin-left: 10px;
+    }
+  }
+}

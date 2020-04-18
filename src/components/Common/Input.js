@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import cx from 'classnames';
 import './Input.scss';
 
-const Input = ({ placeholder, name, onChange, value }) => {
+const Input = ({ placeholder, name, onChange }) => {
     const handleChange = useCallback(
         (event) => {
             const {
@@ -24,7 +24,6 @@ const Input = ({ placeholder, name, onChange, value }) => {
                 name={name}
                 required
                 onChange={handleChange}
-                value={value}
             />
             <label htmlFor='name' className='formLabel'>
                 {placeholder}
@@ -37,7 +36,6 @@ Input.propTypes = {
     placeholder: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
     onChange: PropTypes.func.isRequired,
-    value: PropTypes.string.isRequired,
 };
 
 export default Input;

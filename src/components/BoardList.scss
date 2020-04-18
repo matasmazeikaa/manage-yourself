@@ -1,0 +1,25 @@
+.board-list-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 50px;
+
+  .add-board-button {
+    background: #EFEFEF;
+    padding: 50px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.1s ease-in;
+
+    &:hover {
+      background-color: #969696;
+    }
+
+    span {
+      margin-right: 8px;
+    }
+  }
+}
