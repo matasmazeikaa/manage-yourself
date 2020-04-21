@@ -4,10 +4,13 @@ import './index.css';
 import App from './components/App';
 import * as serviceWorker from './tools/serviceWorker';
 import { BrowserRouter } from 'react-router-dom';
+import { createBrowserHistory } from 'history';
+
+export const history = createBrowserHistory();
 
 ReactDOM.render(
     <React.StrictMode>
-        <BrowserRouter>
+        <BrowserRouter history={history}>
             <App />
         </BrowserRouter>
     </React.StrictMode>,

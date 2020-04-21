@@ -1,22 +1,29 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import cx from 'classnames';
-import { observable } from 'mobx';
-import { v5 as uuid } from 'uuid';
+import PropTypes from 'prop-types';
 import { observer } from 'mobx-react';
 import { DragDropContext } from 'react-beautiful-dnd';
 import { FiPlus, FiCheck, GiCancel } from 'react-icons/all';
 import Column from './Board/Column';
 import { useStore } from '../hooks/useStore';
-import Button from './Common/Button';
 import { generateId } from '../utils/id-generator';
-import Input from './Common/Input';
 import './Board.scss';
 import './Board/Column.scss';
 import OutsideClickHandler from './Common/HandleOutsideClick';
+import TaskModal from './Board/TaskModal';
 
-const Board = () => {
+const backgroundTheme = {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    zIndex: '-1',
+};
+
+const Board = ({ match }) => {
     const { boardStore } = useStore();
-    const { columns, isColumnInputVisible, columnInputs } = boardStore;
+    const { columns, isColumnInputVisible, columnInputs, board } = boardStore;
 
     const addColumn = useCallback(() => {
         if (!isColumnInputVisible) {
@@ -77,10 +84,29 @@ const Board = () => {
         boardStore.sortTask(source.droppableId, destination.droppableId, source.index, destination.index, draggableId);
     };
 
+    const urlOrColor = () => {
+        if (board.theme.charAt(0) === '#') {
+            return { backgroundColor: board.theme, ...backgroundTheme };
+        }
+
+        return { background: `url(${board.theme}) no-repeat center center fixed`, ...backgroundTheme };
+    };
+
+    useEffect(() => {
+        console.log(match.params.id);
+        if (match.params.id !== undefined) {
+            console.log(1);
+            boardStore.getBoard(match.params.id);
+        }
+
+        return () => boardStore.clearStore();
+    }, [boardStore, boardStore.set, match, match.params.id]);
+
     return (
-        <div style={{ overflowX: 'auto' }}>
-            <div className='background' />
+        <div className='board'>
+            <div style={urlOrColor()} className='background' />
             <DragDropContext onDragEnd={onDragEnd}>
+                <h2>{board.title}</h2>
                 <div className='boardContainer'>
                     {columns.map((column) => (
                         <Column
@@ -123,8 +149,13 @@ const Board = () => {
                     </div>
                 </div>
             </DragDropContext>
+            <TaskModal boardStore={boardStore}/>
         </div>
     );
+};
+
+Board.propTypes = {
+    match: PropTypes.object,
 };
 
 export default observer(Board);

@@ -1,21 +1,32 @@
 import React from 'react';
-import NavBar from './NavBar';
+import { observer } from 'mobx-react';
+import PropTypes from 'prop-types';
+import NavBar from './Dashboard/NavBar';
 import Board from './Board';
 import { Route, Switch } from 'react-router-dom';
+import { useStore } from '../hooks/useStore';
 import BoardList from './BoardList';
+import BoardCreation from './Dashboard/BoardCreation';
 
-const Dashboard = () => {
-    const hi = '';
+const Dashboard = ({ history }) => {
+    const { dashboardStore } = useStore();
+    const { isBoardCreationInputVisible } = dashboardStore;
+    console.log(isBoardCreationInputVisible);
 
     return (
-        <div>
-            <NavBar />
+        <>
+            <NavBar history={history} dashboardStore={dashboardStore}/>
+            {isBoardCreationInputVisible && <BoardCreation dashboardStore={dashboardStore} />}
             <Switch>
-                <Route path='/dashboard/boards' component={BoardList} />
-                <Route path='/dashboard/board' component={Board} />
+                <Route path='/dashboard/boards' component={BoardList} exact={true} />
+                <Route path='/dashboard/boards/:id' component={Board}/>
             </Switch>
-        </div>
+        </>
     );
 };
 
-export default Dashboard;
+Dashboard.propTypes = {
+    history: PropTypes.object.isRequired,
+};
+
+export default observer(Dashboard);

@@ -1,25 +1,73 @@
 .board-list-container {
   display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
   padding: 50px;
+  flex-direction: column;
+  align-content: flex-start;
 
-  .add-board-button {
-    background: #EFEFEF;
-    padding: 50px;
-    border-radius: 10px;
+  h3 {
+    font-size: 30px;
+    margin-top: 0;
+  }
+
+  .board-list-wrapper {
     display: flex;
-    align-items: center;
-    cursor: pointer;
-    transition: background-color 0.1s ease-in;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
 
-    &:hover {
-      background-color: #969696;
+    div {
+      height: 100px;
+      background-color: grey;
+      border-radius: 10px;
+      width: 20%;
+      margin-right: 2%;
+      margin-bottom: 10px;
+      padding: 10px;
+      position: relative;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+
+      &:hover:before {
+        z-index: -1;
+      }
+
+      span, svg {
+        position: relative;
+        z-index: 5;
+      }
+
+      &:before {
+        background: rgba(0,0,0,.15);
+        position: absolute;
+        bottom: 0;
+        content: "";
+        display: block;
+        left: 0;
+        right: 0;
+        top: 0;
+        background-color: rgba(0,0,0,.4);
+        border-radius: 10px;
+      }
     }
 
-    span {
-      margin-right: 8px;
+    .add-board-button {
+      background: #efefef;
+      border-radius: 10px;
+      align-items: center;
+      cursor: pointer;
+      transition: background-color 0.1s ease-in;
+      display: flex;
+      justify-content: center;
+      z-index: 10 !important;
+
+      &:hover {
+        background-color: #969696;
+      }
+
+      span {
+        margin-right: 8px;
+      }
     }
   }
 }

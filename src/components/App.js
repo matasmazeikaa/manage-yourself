@@ -1,11 +1,11 @@
 import React from 'react';
-import { Switch, Route } from 'react-router-dom';
+import { Switch, Route, Redirect } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import LoginPage from './Authentication/LoginPage';
-import RegistrationPage from './Authentication/RegistrationPage';
-import Board from './Board';
+import Login from './Authentication/LoginPage';
+import Register from './Authentication/RegistrationPage';
 import Dashboard from './Dashboard';
 import apiClient, { setAxiosInterceptors } from '../utils/api-client';
+import NotFoundPage from './NotFoundPage';
 
 toast.configure();
 
@@ -13,9 +13,16 @@ setAxiosInterceptors(apiClient);
 
 const App = () => (
     <Switch>
-        <Route path='/login' component={LoginPage} />
-        <Route path='/register' component={RegistrationPage} />
+        <Route path='/' exact={true}>
+            <Redirect to='/login' />
+        </Route>
+        <Route path='/login' component={Login} />
+        <Route path='/register' component={Register} />
         <Route path='/dashboard/boards' component={Dashboard} />
+        <Route path='/not-found' component={NotFoundPage} />
+        <Route path='*'>
+            <Redirect to='/not-found'/>
+        </Route>
     </Switch>
 );
 

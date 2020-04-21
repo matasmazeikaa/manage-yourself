@@ -2,28 +2,49 @@ import { action, flow, observable } from 'mobx';
 import apiClient from '../utils/api-client';
 import CommonStore from './CommonStore';
 
-class AuthorizationStore {
-    @observable isLoadingAuthorization = false;
-    @observable errors = null;
-    @observable values = {
-        username: '',
-        email: '',
-        password: '',
-    };
+const DEFAULT_ERROR_VALUES = {
+    username: null,
+    email: null,
+    password: null,
+};
 
-    @action.bound handleAuthorizationInput (name, value) {
+const DEFAULT_AUTHORIZATION_VALUES = {
+    username: '',
+    email: '',
+    password: '',
+};
+
+export class AuthorizationStore {
+    @observable isLoadingAuthorization = false;
+    @observable errors = DEFAULT_ERROR_VALUES;
+    @observable values = DEFAULT_AUTHORIZATION_VALUES;
+
+    @action.bound handleAuthorizationInput (event) {
+        const {
+            target: { name, value },
+        } = event;
+
+        this.errors[name] = null;
         this.values[name] = value;
     }
 
     @action resetAuthorizationStoreInputValues () {
-        this.values.username = '';
-        this.values.email = '';
-        this.values.password = '';
+        this.values = DEFAULT_AUTHORIZATION_VALUES;
+    }
+
+    @action resetErrors () {
+        this.errors = DEFAULT_ERROR_VALUES;
+    }
+
+    @action setErrors (errors) {
+        errors.forEach((error) => {
+            this.errors[error.name] = error.errorMessage;
+        });
     }
 
     *_login () {
         this.isLoadingAuthorization = true;
-        this.errors = null;
+        this.resetErrors();
 
         try {
             const { data } = yield apiClient.post('user/login', {
@@ -33,11 +54,9 @@ class AuthorizationStore {
 
             CommonStore.setToken(data.token);
 
-            return data;
+            return [data, null];
         } catch (error) {
-            console.log(error);
-            this.errors = error.errors;
-            return error.response.data;
+            return [null, error];
         } finally {
             this.isLoadingAuthorization = false;
         }
@@ -46,21 +65,21 @@ class AuthorizationStore {
 
     *_register () {
         this.isLoadingAuthorization = true;
-        this.errors = null;
+        this.resetErrors();
 
         try {
-            return yield apiClient.post('user/register', {
+            const { data } = yield apiClient.post('user/register', {
                 username: this.values.username,
                 password: this.values.password,
                 email: this.values.email,
             });
+
+            return [data, null];
         } catch (error) {
-            return error.response.data;
+            return [null, error];
         } finally {
             this.isLoadingAuthorization = false;
         }
     }
     register = flow(this._register);
 }
-
-export default new AuthorizationStore();

@@ -3,9 +3,11 @@
   flex-direction: column;
   border: solid 1px white;
   border-radius: 5px;
-  color: white;
+  color: black;
   margin-right: 8px;
   height: 100%;
+  background-color: #b3b4b9;
+  max-height: calc(100vh - 100px);
 
   h3 {
     padding: 10px;
@@ -19,6 +21,9 @@
     min-height: 10px;
     display: flex;
     flex-direction: column;
+    max-height: 100%;
+    overflow-y: auto;
+
   }
 
   .add-task-button {
@@ -31,6 +36,10 @@
     &:hover {
       color: black;
       background-color: white;
+    }
+
+    span {
+      margin-left: 7px;
     }
 
     svg {
@@ -46,6 +55,10 @@
     min-height: 124px;
     transition: height 0.2s ease-in;
 
+    & > div {
+      width: 100%;
+    }
+
     .add-task-input {
       resize: none;
       overflow: hidden;
@@ -53,6 +66,7 @@
       margin: 5px 5px 8px 5px;
       border-radius: 5px;
       width: 94%;
+      font-size: 15px;
     }
   }
 
