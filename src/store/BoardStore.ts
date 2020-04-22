@@ -1,19 +1,12 @@
-import { action, observable, flow } from 'mobx';
+import { action, observable, flow, toJS } from 'mobx';
 import apiClient from '../utils/api-client';
 import { Board, DashboardStore } from './DashboardStore';
 
 export interface Column {
     title: string;
     id: string;
-    tasks: Task[];
+    tasks: any;
 }
-
-interface Task {
-    title: string;
-    description: string;
-    id: string;
-}
-
 export class BoardStore extends DashboardStore {
     @observable board: Board = {
         title: '',
@@ -31,7 +24,15 @@ export class BoardStore extends DashboardStore {
         description: '',
     };
 
-    @observable currentTaskOpen = '';
+    @observable currentTaskOpen = {
+        id: '',
+        title: '',
+        description: '',
+        comments: [],
+        columnId: '',
+    };
+    @observable isDescriptionInputVisible = false;
+    @observable isCurrentOpenTaskTitleInputVisible = false;
 
     @observable isColumnInputVisible = false;
     @observable isTaskInputVisible = false;
@@ -49,6 +50,16 @@ export class BoardStore extends DashboardStore {
         }
 
         this.taskInput[name] = value;
+    }
+
+    @action.bound handleCurrentOpenTaskInput (name, value) {
+        if (name === 'title' && name === 'description') {
+            this.taskInput[name] = value.replace(/\n|\r/g, '');
+
+            return;
+        }
+
+        this.currentTaskOpen[name] = value;
     }
 
     @action.bound handleColumnInput (name, value) {
@@ -73,10 +84,13 @@ export class BoardStore extends DashboardStore {
         this.columns = board.columns;
     }
 
-    @action.bound setTaskModalVisible = (value, taskId) => () => {
-        console.log(value, taskId);
+    @action.bound setTaskModalVisible = (value, task) => () => {
+        if (task.description === '') {
+            this.isDescriptionInputVisible = true;
+        }
+
         this.isTaskModalOpen = value;
-        this.currentTaskOpen = taskId;
+        this.currentTaskOpen = task;
     };
 
     @action resetColumnInput () {
@@ -99,6 +113,15 @@ export class BoardStore extends DashboardStore {
     @action setLoadingBoard (value: boolean) {
         this.isFetchingBoard = value;
     }
+
+    @action setDescriptionInputVisible = (value: boolean) => () => {
+        console.log(value);
+        this.isDescriptionInputVisible = value;
+    };
+
+    @action setCurrentOpenTaskTitleInputVisible = (value: boolean) => () => {
+        this.isCurrentOpenTaskTitleInputVisible = value;
+    };
 
     @action setTasksToColumns (board) {
         const { columns } = board;
@@ -130,6 +153,10 @@ export class BoardStore extends DashboardStore {
             const startColumnIndex = this.columns.findIndex((column) => droppableIdStart === column.id);
             const endColumnIndex = this.columns.findIndex((column) => droppableIdEnd === column.id);
             const task = this.columns[startColumnIndex].tasks.splice(droppableIndexStart, 1);
+            toJS((task[0].columnId = droppableIdEnd));
+            console.log(toJS(task[0]));
+            console.log(droppableIdEnd);
+            console.log(toJS(task));
 
             this.columns[endColumnIndex].tasks.splice(droppableIndexEnd, 0, ...task);
         }
@@ -146,6 +173,12 @@ export class BoardStore extends DashboardStore {
             columns: [],
             tasks: [],
         };
+    }
+
+    @action updateTaskInColumn (columnId, taskId) {
+        this.columns[columnId].title = `${this.columns[columnId].title} `;
+        this.columns[columnId].tasks[taskId] = this.currentTaskOpen;
+        this.columns[columnId].title.trim();
     }
 
     *_deleteColumn (columnId) {
@@ -206,6 +239,7 @@ export class BoardStore extends DashboardStore {
     getBoard = flow(this._getBoard);
 
     *_updateBoardAfterSort () {
+        console.log(this.columns);
         try {
             const { data } = yield apiClient.post(`board/${this.board._id}/sort`, {
                 columns: this.columns,
@@ -217,4 +251,22 @@ export class BoardStore extends DashboardStore {
         }
     }
     updateBoardAfterSort = flow(this._updateBoardAfterSort);
+
+    *_updateTask () {
+        const indexOfColumn = this.columns.findIndex((column) => column.id === this.currentTaskOpen.columnId);
+        const taskIndex = this.columns[indexOfColumn].tasks.findIndex((task) => task.id === this.currentTaskOpen.id);
+        this.updateTaskInColumn(indexOfColumn, taskIndex);
+
+        try {
+            const { data } = yield apiClient.put(`board/${this.board._id}/task/${this.currentTaskOpen.id}`, {
+                description: this.currentTaskOpen.description,
+                title: this.currentTaskOpen.title,
+            });
+
+            return [data, null];
+        } catch (error) {
+            return [null, error];
+        }
+    }
+    updateTask = flow(this._updateTask);
 }

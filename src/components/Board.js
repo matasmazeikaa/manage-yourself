@@ -44,6 +44,8 @@ const Board = ({ match }) => {
         boardStore.resetColumnInput();
     }, [boardStore, columnInputs.title, isColumnInputVisible]);
 
+    console.log(1);
+
     const setColumnTitleInputVisible = useCallback(
         (value) => () => {
             boardStore.setColumnInputVisible(value);
@@ -102,6 +104,7 @@ const Board = ({ match }) => {
         return () => boardStore.clearStore();
     }, [boardStore, boardStore.set, match, match.params.id]);
 
+    console.log(columns);
     return (
         <div className='board'>
             <div style={urlOrColor()} className='background' />

@@ -21,7 +21,7 @@
     align-items: center;
   }
 
-  form {
+  .add-board-form {
     display: flex;
     padding: 10px;
 
@@ -46,7 +46,7 @@
       }
 
       &:before {
-        background: rgba(0,0,0,.15);
+        background: rgba(0, 0, 0, 0.15);
         position: absolute;
         bottom: 0;
         content: "";
@@ -54,7 +54,7 @@
         left: 0;
         right: 0;
         top: 0;
-        background-color: rgba(0,0,0,.4);
+        background-color: rgba(0, 0, 0, 0.4);
         border-radius: 3px;
       }
 

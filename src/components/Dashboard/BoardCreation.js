@@ -36,7 +36,7 @@ const BoardCreation = ({ dashboardStore }) => {
                 return;
             }
 
-            handleBoardCreation();
+            handleBoardCreation(event);
         },
         [handleBoardCreation],
     );
@@ -59,7 +59,7 @@ const BoardCreation = ({ dashboardStore }) => {
                 onOutsideClick={dashboardStore.setBoardCreationInputVisible(false)}
             >
                 <div className='container'>
-                    <form>
+                    <div className='add-board-form'>
                         <div className='input-wrapper' style={urlOrColor(boardForm.theme)}>
                             <GiCancel onClick={dashboardStore.setBoardCreationInputVisible(false)} />
                             <input
@@ -67,11 +67,11 @@ const BoardCreation = ({ dashboardStore }) => {
                                 placeholder='Add title'
                                 name='title'
                                 onChange={handleBoardInput}
-                                onKeyDown={addBoardOnEnter}
+                                onKeyPress={addBoardOnEnter}
                             />
                         </div>
                         <ThemeGrid dashboardStore={dashboardStore} />
-                    </form>
+                    </div>
 
                     <span className='add-board-confirm' onClick={handleBoardCreation}>
                         Create board

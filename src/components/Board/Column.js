@@ -35,6 +35,9 @@ const Column = ({ columnTitle, columnId, tasks, boardStore }) => {
             boardStore.addTask(
                 {
                     title: taskInput.title,
+                    columnId,
+                    description: '',
+                    comments: [],
                     id: generateId(),
                 },
                 columnId,
@@ -80,7 +83,16 @@ const Column = ({ columnTitle, columnId, tasks, boardStore }) => {
                 {(provided) => (
                     <div {...provided.droppableProps} ref={provided.innerRef} className='column'>
                         {tasks.map((task, index) => (
-                            <Task title={task.title} taskIndex={index} taskId={task.id} key={task.id} boardStore={boardStore}/>
+                            <Task
+                                title={task.title}
+                                taskIndex={index}
+                                taskId={task.id}
+                                key={task.id}
+                                boardStore={boardStore}
+                                description={task.description}
+                                comments={task.comments}
+                                columnId={columnId}
+                            />
                         ))}
                         {provided.placeholder}
                     </div>
@@ -95,7 +107,7 @@ const Column = ({ columnTitle, columnId, tasks, boardStore }) => {
                 <div className='add-task-input-wrapper' onKeyDown={(event) => addTaskOnEnter(event, columnId)}>
                     <OutsideClickHandler isContainerOpen={isTaskInputOpen} onOutsideClick={setTaskInputVisible(false)}>
                         <TextArea className='add-task-input' name='title' value={taskInput.title} onChange={handleTaskInput} />
-                        <div >
+                        <div>
                             <div className='save-task-button' onClick={addTask(columnId)}>
                                 <FiCheck />
                                 <span>Save task</span>
