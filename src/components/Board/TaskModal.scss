@@ -11,6 +11,14 @@
     display: flex;
     flex-direction: column;
     padding: 20px;
+    position: relative;
+
+    .close-modal {
+      position: absolute;
+      right: 15px;
+      top: 15px;
+
+    }
 
     .section {
       margin: 12px 40px 8px 56px;
@@ -116,6 +124,8 @@
       display: flex;
       align-items: center;
       margin-bottom: 20px;
+
+
     }
   }
 
@@ -139,4 +149,43 @@
     overflow: hidden;
     margin-left: 40px;
   }
+}
+
+.description {
+  margin-left: 40px;
+  cursor: pointer;
+}
+
+.comment-container {
+  display: flex;
+  flex-direction: column;
+  margin-left: 60px;
+  margin-top: 20px;
+  position: relative;
+
+  .user-creation {
+    display: flex;
+
+    .user {
+      font-weight: bold;
+      margin-right: 20px;
+      text-transform: capitalize;
+      margin-bottom: 10px;
+    }
+  }
+}
+
+.comment-wrapper {
+  width: 100%;
+  max-height: 500px;
+  overflow: auto;
+}
+
+.user-avatar {
+  position: absolute !important;
+  left: -60px;
+  z-index: 1000;
+  top: 5px;
+  width: 36px !important;
+  height: 36px !important;
 }

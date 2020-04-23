@@ -19,9 +19,9 @@ const NavBar = ({ history, dashboardStore }) => {
     );
 
     const logout = useCallback(() => {
-        history.push(CLIENT_URL);
+        history.push('/login');
         localStorage.removeItem('auth-token');
-    });
+    }, [history]);
 
     return (
         <div className='navbar-container'>

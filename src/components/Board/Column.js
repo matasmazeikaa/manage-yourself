@@ -12,12 +12,24 @@ import OutsideClickHandler from '../Common/HandleOutsideClick';
 const Column = ({ columnTitle, columnId, tasks, boardStore }) => {
     const { taskInput } = boardStore;
     const [isTaskInputOpen, setTaskInputOpen] = useState(false);
+    const [isColumnEditVisible, setColumnEditVisible] = useState(false);
 
     const setTaskInputVisible = useCallback(
         (value) => () => {
             setTaskInputOpen(value);
         },
         [],
+    );
+
+    const setColumnEditInputVisible = useCallback(
+        (value) => () => {
+            if (value === true) {
+                boardStore.handleColumnInput('title', columnTitle);
+            }
+
+            setColumnEditVisible(value);
+        },
+        [boardStore, columnTitle],
     );
 
     const addTask = useCallback(
@@ -58,12 +70,20 @@ const Column = ({ columnTitle, columnId, tasks, boardStore }) => {
         [addTask],
     );
 
-    // const setTaskInputVisible = useCallback(
-    //     (value) => () => {
-    //         boardStore.setTaskInputVisible(value);
-    //     },
-    //     [boardStore],
-    // );
+    const updateColumnTitle = useCallback(async () => {
+        if (boardStore.columnInputs.title === '') {
+            return;
+        }
+
+        const [res, err] = await boardStore.updateColumnTitle(columnId, boardStore.columnInputs.title);
+        setColumnEditVisible(false);
+    }, [boardStore, columnId]);
+
+    const deleteColumn = useCallback(async (event) => {
+        event.stopPropagation();
+
+        const [res, err] = await boardStore.deleteColumn(columnId);
+    }, [boardStore, columnId]);
 
     const handleTaskInput = useCallback(
         (event) => {
@@ -76,9 +96,46 @@ const Column = ({ columnTitle, columnId, tasks, boardStore }) => {
         [boardStore],
     );
 
+    const updateColumnTitleOnEnter = useCallback(
+        (event) => {
+            if (event.key !== 'Enter') {
+                return;
+            }
+
+            updateColumnTitle();
+        },
+        [updateColumnTitle],
+    );
+
+    const handleTaskTitleUpdateInput = useCallback(
+        (event) => {
+            const {
+                target: { name, value },
+            } = event;
+
+            boardStore.handleColumnInput(name, value);
+        },
+        [boardStore],
+    );
+
     return (
         <div className='column-wrapper'>
-            <h3>{columnTitle}</h3>
+            {!isColumnEditVisible ? (
+                <h3 onClick={setColumnEditInputVisible(true)} className='column-title'>
+                    {columnTitle}
+                    <GiCancel className='cancel-add-task' onClick={deleteColumn} />
+                </h3>
+            ) : (
+                <OutsideClickHandler isContainerOpen={isColumnEditVisible} onOutsideClick={setColumnEditInputVisible(false)}>
+                    <input
+                        className='column-input'
+                        name='title'
+                        onChange={handleTaskTitleUpdateInput}
+                        value={boardStore.columnInputs.title}
+                        onKeyDown={updateColumnTitleOnEnter}
+                    />
+                </OutsideClickHandler>
+            )}
             <Droppable droppableId={columnId}>
                 {(provided) => (
                     <div {...provided.droppableProps} ref={provided.innerRef} className='column'>

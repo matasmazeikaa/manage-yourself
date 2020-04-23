@@ -2,6 +2,7 @@ const backgroundThemeWithImageStyle = {
     backgroundPosition: '50%',
     backgroundSize: 'cover',
     boxShadow: 'none',
+    position: 'relative',
 };
 
 export const urlOrColor = (theme) => {

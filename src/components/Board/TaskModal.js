@@ -5,8 +5,10 @@ import TextArea from 'react-textarea-autosize';
 import { MdSubtitles, MdDescription, MdComment, FiCheck, GiCancel } from 'react-icons/all';
 import Modal from '@material-ui/core/Modal';
 import PropTypes from 'prop-types';
+import moment from 'moment';
 import './TaskModal.scss';
 import { useStore } from '../../hooks/useStore';
+import { DEFAULT_CURRENT_TASK } from '../../store/BoardStore';
 
 const TaskModal = () => {
     const { boardStore } = useStore();
@@ -20,20 +22,42 @@ const TaskModal = () => {
                 target: { name, value },
             } = event;
 
-            console.log(name, value);
-
             boardStore.handleCurrentOpenTaskInput(name, value);
         },
         [boardStore],
     );
 
-    const handleUpdateTask = useCallback(async () => {
-        const [res, err] = await boardStore.updateTask();
+    const handleUpdateTask = useCallback(
+        (value) => async () => {
+            if (value === 'description') {
+                boardStore.setDescriptionInputVisible(false)();
+            }
 
-        if (!err) {
-            console.log('nice');
-        }
-    }, [boardStore]);
+            const [res, err] = await boardStore.updateTask();
+        },
+        [boardStore],
+    );
+
+    const handleCommentAdd = useCallback(
+        async (event) => {
+            if (event.key === 'Enter') {
+                const [res, err] = await boardStore.addComment();
+                boardStore.handleCommentInput('');
+            }
+        },
+        [boardStore],
+    );
+
+    const handleCommentInput = useCallback(
+        (event) => {
+            const {
+                target: { value },
+            } = event;
+
+            boardStore.handleCommentInput(value);
+        },
+        [boardStore],
+    );
 
     const onEnterKey = useCallback(
         (event) => {
@@ -46,7 +70,7 @@ const TaskModal = () => {
             }
 
             boardStore.setCurrentOpenTaskTitleInputVisible(false)();
-            handleUpdateTask();
+            handleUpdateTask()();
         },
         [boardStore, handleUpdateTask, title],
     );
@@ -60,6 +84,10 @@ const TaskModal = () => {
         >
             <div className='modalWrapper'>
                 <div className='content'>
+                    <GiCancel
+                        className='cancel-add-task close-modal'
+                        onClick={boardStore.setTaskModalVisible(false, DEFAULT_CURRENT_TASK)}
+                    />
                     <div className='section'>
                         <MdSubtitles />
                         {!boardStore.isCurrentOpenTaskTitleInputVisible ? (
@@ -80,7 +108,9 @@ const TaskModal = () => {
                             <h1>Description</h1>
                         </div>
                         {!boardStore.isDescriptionInputVisible ? (
-                            <span onClick={boardStore.setDescriptionInputVisible(true)}>{description}</span>
+                            <span onClick={boardStore.setDescriptionInputVisible(true)} className='description'>
+                                {description}
+                            </span>
                         ) : (
                             <>
                                 <TextArea
@@ -91,11 +121,14 @@ const TaskModal = () => {
                                     name='description'
                                 />
                                 <div className='save-description-container'>
-                                    <div className='save-description-wrapper'>
+                                    <div className='save-description-wrapper' onClick={handleUpdateTask('description')}>
                                         <FiCheck />
                                         <span onClick={handleUpdateTask}>Save description</span>
                                     </div>
-                                    <GiCancel className='cancel-add-task' onClick={boardStore.setDescriptionInputVisible(false)} />
+                                    <GiCancel
+                                        className='cancel-add-task'
+                                        onClick={description !== '' && boardStore.setDescriptionInputVisible(false)}
+                                    />
                                 </div>
                             </>
                         )}
@@ -106,8 +139,25 @@ const TaskModal = () => {
                             <h1>Comments</h1>
                         </div>
                         <div className='comments-wrapper'>
-                            <Avatar className='avatar'>MM</Avatar>
-                            <TextArea className='comment-input' placeholder='Leave a comment ...' />
+                            <TextArea
+                                className='comment-input'
+                                placeholder='Leave a comment ...'
+                                value={boardStore.comment}
+                                onKeyPress={handleCommentAdd}
+                                onChange={handleCommentInput}
+                            />
+                        </div>
+                        <div className='comment-wrapper'>
+                            {boardStore.currentTaskOpen.comments.map((comment, index) => (
+                                <div key={index} className='comment-container'>
+                                    <Avatar className='user-avatar'>{comment.user[0].substring(0, 2)}</Avatar>
+                                    <div className='user-creation'>
+                                        <span className='user'>{comment.user[0]}</span>
+                                        <span>{moment(comment.creation_date).format('YYYY-MM-DD HH:mm')}</span>
+                                    </div>
+                                    <span>{comment.description}</span>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </div>

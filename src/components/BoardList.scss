@@ -10,18 +10,15 @@
   }
 
   .board-list-wrapper {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    width: 100%;
+    display: grid;
+    grid-gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
 
     div {
       height: 100px;
       background-color: grey;
       border-radius: 10px;
-      width: 20%;
-      margin-right: 2%;
-      margin-bottom: 10px;
+      width: 90%;
       padding: 10px;
       position: relative;
       color: white;
@@ -69,5 +66,19 @@
         margin-right: 8px;
       }
     }
+  }
+}
+
+.delete-board {
+  position: absolute !important;
+  right: 5px;
+  top: 5px;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  transition: color .1s ease-in;
+
+  &:hover {
+    color: #BFC0C0;
   }
 }

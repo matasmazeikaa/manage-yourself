@@ -32,7 +32,6 @@ export default apiClient();
 export const setAxiosInterceptors = (instance) => {
     instance.interceptors.response.use(
         (response) => {
-            console.log(response);
             instance.defaults.headers.Authorization = localStorage.getItem('auth-token');
 
             if (response.config.url === LOGIN_URL || response.config.url === REGISTER_URL) {
@@ -49,7 +48,6 @@ export const setAxiosInterceptors = (instance) => {
         },
         (error) => {
             const { response } = error;
-            console.log(error);
 
             if (typeof response === 'undefined') {
                 throw {

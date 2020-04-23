@@ -11,6 +11,7 @@ import './Board.scss';
 import './Board/Column.scss';
 import OutsideClickHandler from './Common/HandleOutsideClick';
 import TaskModal from './Board/TaskModal';
+import Loader from './Common/Loader';
 
 const backgroundTheme = {
     position: 'absolute',
@@ -23,7 +24,7 @@ const backgroundTheme = {
 
 const Board = ({ match }) => {
     const { boardStore } = useStore();
-    const { columns, isColumnInputVisible, columnInputs, board } = boardStore;
+    const { columns, isColumnInputVisible, columnInputs, board, isFetchingBoard } = boardStore;
 
     const addColumn = useCallback(() => {
         if (!isColumnInputVisible) {
@@ -43,8 +44,6 @@ const Board = ({ match }) => {
         });
         boardStore.resetColumnInput();
     }, [boardStore, columnInputs.title, isColumnInputVisible]);
-
-    console.log(1);
 
     const setColumnTitleInputVisible = useCallback(
         (value) => () => {
@@ -77,7 +76,6 @@ const Board = ({ match }) => {
 
     const onDragEnd = (result) => {
         const { destination, source, draggableId } = result;
-        console.log(destination, source, draggableId);
 
         if (!destination) {
             return;
@@ -95,18 +93,16 @@ const Board = ({ match }) => {
     };
 
     useEffect(() => {
-        console.log(match.params.id);
         if (match.params.id !== undefined) {
-            console.log(1);
             boardStore.getBoard(match.params.id);
         }
 
         return () => boardStore.clearStore();
     }, [boardStore, boardStore.set, match, match.params.id]);
 
-    console.log(columns);
     return (
         <div className='board'>
+            {isFetchingBoard && <Loader />}
             <div style={urlOrColor()} className='background' />
             <DragDropContext onDragEnd={onDragEnd}>
                 <h2>{board.title}</h2>

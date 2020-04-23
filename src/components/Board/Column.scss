@@ -111,3 +111,17 @@
     color: #BFC0C0;
   }
 }
+
+.column-title {
+  position: relative;
+
+  svg {
+    position: absolute;
+    right: 5px;
+    top: 5px;
+
+    &:hover {
+      color: #81171B;
+    }
+  }
+}

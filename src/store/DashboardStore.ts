@@ -25,6 +25,8 @@ export class DashboardStore {
     @observable isBoardCreationInputVisible = false;
     @observable isNavBoardListOpen = false;
 
+    @observable isLoadingBoardList = false;
+
     @action.bound setBoardInput (name, value) {
         this.boardForm[name] = value.replace(/\n|\r/g, '');
     }
@@ -41,12 +43,16 @@ export class DashboardStore {
     }
 
     *_getBoards () {
+        this.isLoadingBoardList = true;
+
         try {
             const { data } = yield apiClient.get('board');
 
             this.boards = data;
         } catch (error) {
             return [error];
+        } finally {
+            this.isLoadingBoardList = false;
         }
     }
     getBoards = flow(this._getBoards);
@@ -62,6 +68,19 @@ export class DashboardStore {
         }
     }
     addBoard = flow(this._addBoard);
+
+    *_deleteBoard (boardId) {
+        this.boards = this.boards.filter((board) => board && board._id !== boardId);
+
+        try {
+            const { data } = yield apiClient.delete(`board/${boardId}`);
+
+            return [data, null];
+        } catch (error) {
+            return [null, error];
+        }
+    }
+    deleteBoard = flow(this._deleteBoard);
 
     @action.bound setBoardCreationInputVisible = (value: boolean) => () => {
         this.isBoardCreationInputVisible = value;

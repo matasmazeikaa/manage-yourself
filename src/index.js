@@ -5,8 +5,10 @@ import App from './components/App';
 import * as serviceWorker from './tools/serviceWorker';
 import { BrowserRouter } from 'react-router-dom';
 import { createBrowserHistory } from 'history';
+import 'react-notifications/lib/notifications.css';
 
 export const history = createBrowserHistory();
+
 
 ReactDOM.render(
     <React.StrictMode>

@@ -11,7 +11,6 @@ import BoardCreation from './Dashboard/BoardCreation';
 const Dashboard = ({ history }) => {
     const { dashboardStore } = useStore();
     const { isBoardCreationInputVisible } = dashboardStore;
-    console.log(isBoardCreationInputVisible);
 
     return (
         <>

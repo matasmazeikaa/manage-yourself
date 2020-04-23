@@ -2,6 +2,14 @@ import { action, observable, flow, toJS } from 'mobx';
 import apiClient from '../utils/api-client';
 import { Board, DashboardStore } from './DashboardStore';
 
+export const DEFAULT_CURRENT_TASK = {
+    id: '',
+    title: '',
+    description: '',
+    comments: [],
+    columnId: '',
+};
+
 export interface Column {
     title: string;
     id: string;
@@ -24,6 +32,8 @@ export class BoardStore extends DashboardStore {
         description: '',
     };
 
+    @observable comment = '';
+
     @observable currentTaskOpen = {
         id: '',
         title: '',
@@ -38,6 +48,8 @@ export class BoardStore extends DashboardStore {
     @observable isTaskInputVisible = false;
     @observable isTaskModalOpen = false;
 
+    @observable isColumnTitleEditInputVisible = false;
+
     @observable isFetchingBoard = false;
 
     @observable boardError = null;
@@ -50,6 +62,10 @@ export class BoardStore extends DashboardStore {
         }
 
         this.taskInput[name] = value;
+    }
+
+    @action handleCommentInput (value) {
+        this.comment = value.replace(/\n|\r/g, '');
     }
 
     @action.bound handleCurrentOpenTaskInput (name, value) {
@@ -115,13 +131,16 @@ export class BoardStore extends DashboardStore {
     }
 
     @action setDescriptionInputVisible = (value: boolean) => () => {
-        console.log(value);
         this.isDescriptionInputVisible = value;
     };
 
     @action setCurrentOpenTaskTitleInputVisible = (value: boolean) => () => {
         this.isCurrentOpenTaskTitleInputVisible = value;
     };
+
+    @action setColumnTitleEditInputVisible (value: boolean) {
+        this.isColumnTitleEditInputVisible = value;
+    }
 
     @action setTasksToColumns (board) {
         const { columns } = board;
@@ -130,7 +149,6 @@ export class BoardStore extends DashboardStore {
         tasks.forEach((task) => {
             columns.forEach((column) => {
                 if (task.columnId === column.id) {
-                    console.log(task, column);
                     column.tasks.push(task);
                 }
             });
@@ -154,9 +172,6 @@ export class BoardStore extends DashboardStore {
             const endColumnIndex = this.columns.findIndex((column) => droppableIdEnd === column.id);
             const task = this.columns[startColumnIndex].tasks.splice(droppableIndexStart, 1);
             toJS((task[0].columnId = droppableIdEnd));
-            console.log(toJS(task[0]));
-            console.log(droppableIdEnd);
-            console.log(toJS(task));
 
             this.columns[endColumnIndex].tasks.splice(droppableIndexEnd, 0, ...task);
         }
@@ -180,17 +195,6 @@ export class BoardStore extends DashboardStore {
         this.columns[columnId].tasks[taskId] = this.currentTaskOpen;
         this.columns[columnId].title.trim();
     }
-
-    *_deleteColumn (columnId) {
-        this.columns.filter((column) => column.id !== columnId);
-
-        try {
-            yield apiClient.delete(`board/column/${columnId}`);
-        } catch (error) {
-            this.boardError = error.response.data;
-        }
-    }
-    deleteColumn = flow(this._deleteColumn);
 
     *_addColumn (newColumn) {
         const currentBoardId = this.board._id;
@@ -239,7 +243,6 @@ export class BoardStore extends DashboardStore {
     getBoard = flow(this._getBoard);
 
     *_updateBoardAfterSort () {
-        console.log(this.columns);
         try {
             const { data } = yield apiClient.post(`board/${this.board._id}/sort`, {
                 columns: this.columns,
@@ -269,4 +272,53 @@ export class BoardStore extends DashboardStore {
         }
     }
     updateTask = flow(this._updateTask);
+
+    *_updateColumnTitle (columnId, title) {
+        // @ts-ignore
+        this.columns.find((column) => column.id === columnId).title = this.columnInputs.title ;
+        this.columnInputs.title = '';
+        this.isColumnTitleEditInputVisible = false;
+
+        try {
+            const { data } = yield apiClient.put(`board/${this.board._id}/column/${columnId}`, {
+                title,
+            });
+
+            return [data, null];
+        } catch (error) {
+            return [null, error];
+        }
+    }
+    updateColumnTitle = flow(this._updateColumnTitle);
+
+    *_deleteColumn (columnId) {
+        // @ts-ignore
+        const columnIndex = this.columns.findIndex((column) => column.id === columnId);
+        this.columns.splice(columnIndex, 1);
+
+        try {
+            const { data } = yield apiClient.delete(`board/${this.board._id}/column/${columnId}`);
+
+            return [data, null];
+        } catch (error) {
+            return [null, error];
+        }
+    }
+    deleteColumn = flow(this._deleteColumn);
+
+    *_addComment () {
+        try {
+            const { data } = yield apiClient.post(`board/${this.board._id}/task/${this.currentTaskOpen.id}/comments`, {
+                description: this.comment,
+            });
+
+            // @ts-ignore
+            this.currentTaskOpen.comments.push(data);
+
+            return [data, null];
+        } catch (error) {
+            return [null, error];
+        }
+    }
+    addComment = flow(this._addComment);
 }
