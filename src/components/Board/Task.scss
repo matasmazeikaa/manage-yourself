@@ -6,3 +6,14 @@
   background-color: white;
   color: black;
 }
+
+.task-title-wrapper {
+  position: relative;
+
+  .delete-task {
+    position: absolute;
+    right: -4px;
+    top: -4px;
+    cursor: pointer;
+  }
+}

@@ -273,9 +273,27 @@ export class BoardStore extends DashboardStore {
     }
     updateTask = flow(this._updateTask);
 
+    *_deleteTask (taskId, columnId) {
+        const columnIndex = this.columns.findIndex((column) => column.id === columnId);
+        const taskIndex = this.columns[columnIndex].tasks.findIndex((task) => task && task.id === taskId);
+
+        delete this.columns[columnIndex].tasks[taskIndex];
+        this.columns[columnIndex].title = `${this.columns[columnIndex].title} `;
+        this.columns[columnIndex].title.trim();
+
+        try {
+            const { data } = yield apiClient.delete(`board/${this.board._id}/task/${taskId}`);
+
+            return [data, null];
+        } catch (error) {
+            return [null, error];
+        }
+    }
+    deleteTask = flow(this._deleteTask);
+
     *_updateColumnTitle (columnId, title) {
         // @ts-ignore
-        this.columns.find((column) => column.id === columnId).title = this.columnInputs.title ;
+        this.columns.find((column) => column.id === columnId).title = this.columnInputs.title;
         this.columnInputs.title = '';
         this.isColumnTitleEditInputVisible = false;
 
